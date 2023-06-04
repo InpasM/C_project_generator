@@ -6,7 +6,7 @@
 /*   By: mehdisapin <mehdisapin@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/13 19:24:49 by mehdisapin        #+#    #+#             */
-/*   Updated: 2023/03/12 12:23:48 by mehdisapin       ###   ########.fr       */
+/*   Updated: 2023/06/04 22:42:46 by mehdisapin       ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,11 +50,31 @@
 
 # define NOCOLOR "\e[0m"
 
+# define C 1
+# define CPP 2
+
+typedef struct s_lib
+{
+	char	*name;
+	char	*value;
+}			t_lib;
+
+typedef struct s_db
+{
+	int		add_db;
+	int		fd_db;
+	int		nb_lib;
+	char	*file;
+	// char	***lib;
+	t_lib	***lib;
+}			t_db;
+
 typedef struct s_file
 {
 	char	name[98];
 	char	h_file[100];
 	char	header[900];
+	int		type_project;
 	int		is_libft;
 	int		is_folder;
 	int		use_struct;
@@ -62,16 +82,20 @@ typedef struct s_file
 	char	folders[20][50];
 	char	c_file[20][50][20];
 	char	*pwd_path;
+	t_db	*db;
 }			t_file;
 
+void	add_element(int *is_elem, char *question);
+void	execute_cmd(char *cmd_path, char **arr_args, char **envp);
 void	generate_header(int fd, char *file_name, int version);
-void	ft_write_char(int fd, char c, int nb);
-void	write_str(int fd, char *str);
-int		get_user_input(t_file *project);
-
 void	generate_file(t_file *project);
 void	generate_folder(t_file *project, char **envp);
-void	execute_cmd(char *cmd_path, char **arr_args, char **envp);
+void	ft_write_char(int fd, char c, int nb);
+void	write_str(int fd, char *str);
+
+int		get_user_input(t_file *project, char **argv, char **envp);
+int		parsing_database(t_file *project, char **argv, char **envp);
+
 char	*ft_strtoupper(char *str);
 
 #endif

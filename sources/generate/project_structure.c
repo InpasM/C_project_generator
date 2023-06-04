@@ -6,7 +6,7 @@
 /*   By: mehdisapin <mehdisapin@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/12 09:33:34 by mehdisapin        #+#    #+#             */
-/*   Updated: 2023/03/13 18:23:22 by mehdisapin       ###   ########.fr       */
+/*   Updated: 2023/06/02 14:35:32 by mehdisapin       ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,21 +83,12 @@ void	create_file_c(t_file *project, int i)
 
 void	generate_file(t_file *project)
 {
-	char	*tmp_path;
-	int		tmp_filefd;
 	int		i;
-	int		j;
-
-	(void)tmp_path;
-	(void)tmp_filefd;
-	(void)i;
-	(void)j;
 
 	create_project_h(project);
 
 	if (project->use_struct && project->is_folder)
 	{
-		printf("file c into specific folder\n");
 		i = -1;
 		while (project->folders[++i][0])
 			create_file_c(project, i);
@@ -109,35 +100,9 @@ void	generate_file(t_file *project)
 			create_file_c(project, i);
 	}
 	else if (project->use_struct && !project->is_folder)
-	{
-		printf("file c directly into sources\n");
 		create_file_c(project, 0);
-	}
 	else if (!project->use_struct && !project->is_folder)
-	{
-		printf("file c directly into %s\n", project->name);
 		create_file_c(project, 0);
-	}
-
-	// i = -1;
-	// while (project->folders[++i][0])
-	// {
-	// 	j = -1;
-	// 	while (project->c_file[i][++j][0])
-	// 	{
-	// 		tmp_path = ft_strjoin(ft_strjoin(ft_strjoin(ft_strjoin(project->pwd_path, "/sources/"), project->folders[i]), "/"), project->c_file[i][j]);
-	// 		tmp_filefd = open(tmp_path, O_RDWR | O_CREAT, 0644);
-
-	// 		// write text into the file.h
-	// 		generate_header(tmp_filefd, project->c_file[i][j], 1);
-	// 		write_str(tmp_filefd, "#include \"../../includes/");
-	// 		write_str(tmp_filefd, project->name);
-	// 		write_str(tmp_filefd, ".h\"\n");
-	// 		if (i == 0 && j == 0)
-	// 			write_str(tmp_filefd, "\nint	main()\n{\n	return (0);\n}\n");
-	// 		close (tmp_filefd);
-	// 	}
-	// }
 }
 
 void	generate_folder(t_file *project, char **envp)
@@ -149,7 +114,6 @@ void	generate_folder(t_file *project, char **envp)
 	// mkdir main project directory`
 	args_tmp = ft_arradd_back(args_mkdir, project->pwd_path);
 	execute_cmd(args_tmp[0], args_tmp, envp);
-
 	if (project->use_struct)
 	{
 		// mkdir includes

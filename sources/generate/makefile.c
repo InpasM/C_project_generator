@@ -6,7 +6,7 @@
 /*   By: mehdisapin <mehdisapin@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/12 22:18:27 by mehdisapin        #+#    #+#             */
-/*   Updated: 2023/03/13 19:24:23 by mehdisapin       ###   ########.fr       */
+/*   Updated: 2023/06/03 09:23:29 by mehdisapin       ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,22 @@ void	write_str(int fd, char *str)
 	len = strlen(str);
 	for (int i = 0; i < len; i++)
 		write(fd, &str[i], 1);
+}
+
+int	write_all(int fd, ...)
+{
+	va_list	listptr;
+	int		len_fullstr;
+	char	*tmp_str;
+
+	if (write (1, 0, 0) != 0)
+		return (-1);
+	len_fullstr = -1;
+	va_start(listptr, fd);
+	while ((tmp_str = va_arg(listptr, char *)))
+		write(fd, tmp_str, ft_strlen(tmp_str));
+	va_end(listptr);
+	return (len_fullstr);
 }
 
 void	generate_title(int fd, char *title)
@@ -61,21 +77,12 @@ void	generate_title(int fd, char *title)
 
 void	generate_variables(int fd, t_file *project)
 {
-	write_str(fd, "NAME		=	");
-	write_str(fd, project->name);
-	ft_write_char(fd, '\n', 2);
-
-	write_str(fd, "UNAME		=	$(shell uname)\n\nNOCOLOR		=	\
-\\033[0m\nBGREEN		=	\\033[1;32m\n\n");
-
-	write_str(fd, "HEADER		=	");
+	write_all(fd, "NAME		=	", project->name, "\n\nUNAME		=	$(shell \
+uname)\n\nNOCOLOR		=	\\033[0m\nBGREEN		=	\\033[1;32m\n\n", \
+"HEADER		=	", NULL);
 	if (project->use_struct)
 		write_str(fd, "includes/");
-	write_str(fd, project->name);
-	write_str(fd, ".h\n\n");
-
-	write_str(fd, "MAKEFILE	=	Makefile\n\n");
-
+	write_all(fd, project->name, ".h\n\nMAKEFILE	=	Makefile\n\n", NULL);
 	if (project->is_libft)
 	{
 		if (project->use_struct)
@@ -84,9 +91,7 @@ $(LIBFT_DIR)libft.a\n\n");
 		else
 			write_str(fd, "LIBFT_DIR	=	libft/\nLIBFT_A		=	\
 $(LIBFT_DIR)libft.a\n\n");
-
 	}
-	
 	write_str(fd, "CFLAGS 		= 	-Wall -Wextra -Werror\n\n\
 RM 			= 	rm -rf\n\nAR 			= 	ar\n\n\
 ARFLAGS 	= 	-rcs\n\n\n");
@@ -115,36 +120,22 @@ void	generate_paths(int fd, t_file *project)
 		// write source path
 		int	i = -1;
 		while (++i < project->nb_folder)
-		{
-			write_str(fd, "SRC_");
-			write_str(fd, ft_strtoupper(project->folders[i]));
-			write_str(fd, "_PATH		=	$(SRCS_PATH)");
-			write_str(fd, project->folders[i]);
-			write_str(fd, "/\n");
-		}
+			write_all(fd, "SRC_", ft_strtoupper(project->folders[i]), \
+"_PATH		=	$(SRCS_PATH)", project->folders[i], "/\n", NULL);
 		write_str(fd, "\n");
 
 		// write obj path
 		i = -1;
 		while (++i < project->nb_folder)
-		{
-			write_str(fd, "OBJ_");
-			write_str(fd, ft_strtoupper(project->folders[i]));
-			write_str(fd, "_PATH		=	$(SRC_");
-			write_str(fd, ft_strtoupper(project->folders[i]));
-			write_str(fd, "_PATH).objs/\n");
-		}
+			write_all(fd, "OBJ_", ft_strtoupper(project->folders[i]), \
+"_PATH		=	$(SRC_", ft_strtoupper(project->folders[i]), "_PATH).objs/\n", NULL);
 		write_str(fd, "\n");
 
 		// write obj dirs
 		i = -1;
 		write_str(fd, "OBJS_DIRS	=	");
 		while (++i < project->nb_folder)
-		{
-			write_str(fd, "$(OBJ_");
-			write_str(fd, ft_strtoupper(project->folders[i]));
-			write_str(fd, "_PATH) ");
-		}
+			write_all(fd, "$(OBJ_", ft_strtoupper(project->folders[i]), "_PATH) ", NULL);
 		write_str(fd, "\n\n\n");
 	}
 	else if (project->use_struct && !project->is_folder)
@@ -156,36 +147,21 @@ void	generate_paths(int fd, t_file *project)
 		// write source path
 		int	i = -1;
 		while (++i < project->nb_folder)
-		{
-			write_str(fd, "SRC_");
-			write_str(fd, ft_strtoupper(project->folders[i]));
-			write_str(fd, "_PATH		=	");
-			write_str(fd, project->folders[i]);
-			write_str(fd, "/\n");
-		}
+			write_all(fd, "SRC_", ft_strtoupper(project->folders[i]), "_PATH		=	" \
+			, project->folders[i], "/\n", NULL);
 		write_str(fd, "\n");
 
 		// write obj path
 		i = -1;
 		while (++i < project->nb_folder)
-		{
-			write_str(fd, "OBJ_");
-			write_str(fd, ft_strtoupper(project->folders[i]));
-			write_str(fd, "_PATH		=	$(SRC_");
-			write_str(fd, ft_strtoupper(project->folders[i]));
-			write_str(fd, "_PATH).objs/\n");
-		}
-		write_str(fd, "\n");
+			write_all(fd, "OBJ_", ft_strtoupper(project->folders[i]), "_PATH		=	$(SRC_", \
+			ft_strtoupper(project->folders[i]), "_PATH).objs/\n", NULL);
 
 		// write obj dirs
 		i = -1;
-		write_str(fd, "OBJS_DIRS	=	");
+		write_str(fd, "\nOBJS_DIRS	=	");
 		while (++i < project->nb_folder)
-		{
-			write_str(fd, "$(OBJ_");
-			write_str(fd, ft_strtoupper(project->folders[i]));
-			write_str(fd, "_PATH) ");
-		}
+			write_all(fd, "$(OBJ_", ft_strtoupper(project->folders[i]), "_PATH) ", NULL);
 		write_str(fd, "\n\n\n");
 	}
 }
@@ -201,41 +177,26 @@ void	generate_sources(int fd, t_file *project)
 		i = -1;
 		while (++i < project->nb_folder)
 		{
-			write_str(fd, "SRC_");
-			write_str(fd, ft_strtoupper(project->folders[i]));
-			write_str(fd, "_FILES		=	");
+			write_all(fd, "SRC_", ft_strtoupper(project->folders[i]), "_FILES		=	", NULL);
 			j = -1;
 			while (project->c_file[i][++j][0])
-			{
-				write_str(fd, project->c_file[i][j]);
-				write_str(fd, "	");
-			}
+				write_all(fd, project->c_file[i][j], " ", NULL);
 			write_str(fd, "\n\n");
 		}
 
 		// write obj path
 		i = -1;
 		while (++i < project->nb_folder)
-		{
-			write_str(fd, "SRCS_");
-			write_str(fd, ft_strtoupper(project->folders[i]));
-			write_str(fd, "		=	$(addprefix $(SRC_");
-			write_str(fd, ft_strtoupper(project->folders[i]));
-			write_str(fd, "_PATH), $(SRC_");
-			write_str(fd, ft_strtoupper(project->folders[i]));
-			write_str(fd, "_FILES))\n");
-		}
+			write_all(fd, "SRCS_", ft_strtoupper(project->folders[i]), "		=	$(addprefix $(SRC_", \
+			ft_strtoupper(project->folders[i]), "_PATH), $(SRC_", ft_strtoupper(project->folders[i]), \
+			"_FILES))\n", NULL);
 		write_str(fd, "\n");
 
 		// write obj dirs
 		i = -1;
 		write_str(fd, "SRCS	=	");
 		while (++i < project->nb_folder)
-		{
-			write_str(fd, "$(SRCS_");
-			write_str(fd, ft_strtoupper(project->folders[i]));
-			write_str(fd, ") ");
-		}
+			write_all(fd, "$(SRCS_", ft_strtoupper(project->folders[i]), ") ", NULL);
 		write_str(fd, "\n\n\n");
 	}
 	else
@@ -246,10 +207,7 @@ void	generate_sources(int fd, t_file *project)
 			j = -1;
 			write_str(fd, "SRC_FILES	=	");
 			while (project->c_file[0][++j][0])
-			{
-				write_str(fd, project->c_file[0][j]);
-				write_str(fd, "	");
-			}
+				write_all(fd, project->c_file[0][j], " ", NULL);
 			write_str(fd, "\n\nSRCS	=	$(addprefix $(SRCS_PATH), $(SRC_FILES))\n\n\n");
 		}
 		else if (!project->use_struct)
@@ -258,10 +216,7 @@ void	generate_sources(int fd, t_file *project)
 			j = -1;
 			write_str(fd, "SRCS	=	");
 			while (project->c_file[0][++j][0])
-			{
-				write_str(fd, project->c_file[0][j]);
-				write_str(fd, "	");
-			}
+				write_all(fd, project->c_file[0][j], " ", NULL);
 			write_str(fd, "\n\n\n");
 		}
 	}
@@ -276,39 +231,23 @@ void	generate_objects(int fd, t_file *project)
 		// write objects path
 		i = -1;
 		while (++i < project->nb_folder)
-		{
-			write_str(fd, "OBJS_");
-			write_str(fd, ft_strtoupper(project->folders[i]));
-			write_str(fd, "		=	$(addprefix $(OBJ_");
-			write_str(fd, ft_strtoupper(project->folders[i]));
-			write_str(fd, "_PATH),		\\\n						$(SRC_");
-			write_str(fd, ft_strtoupper(project->folders[i]));
-			write_str(fd, "_FILES:.c=.o))\n");
-		}
+			write_all(fd, "OBJS_", ft_strtoupper(project->folders[i]), "		=	$(addprefix $(OBJ_", \
+			ft_strtoupper(project->folders[i]), "_PATH),		\\\n						$(SRC_", \
+			ft_strtoupper(project->folders[i]), "_FILES:.c=.o))\n", NULL);
 		write_str(fd, "\n");
 
 		// write obj files
 		i = -1;
 		write_str(fd, "OBJS	=	");
 		while (++i < project->nb_folder)
-		{
-			write_str(fd, "$(OBJS_");
-			write_str(fd, ft_strtoupper(project->folders[i]));
-			write_str(fd, ")	");
-		}
+			write_all(fd, "$(OBJS_", ft_strtoupper(project->folders[i]), ")	", NULL);
 		write_str(fd, "\n\n");
 
 		// write obj path
 		i = -1;
 		while (++i < project->nb_folder)
-		{
-			write_str(fd, "$(OBJ_");
-			write_str(fd, ft_strtoupper(project->folders[i]));
-			write_str(fd, "_PATH)\%.o: $(SRC_");
-			write_str(fd, ft_strtoupper(project->folders[i]));
-			write_str(fd, "_PATH)\%.c $(MAKEFILE) $(HEADER)\n");
-			write_str(fd, "	$(CC) $(CFLAGS) -o $@ -c $<\n\n");
-		}
+			write_all(fd, "$(OBJ_", ft_strtoupper(project->folders[i]), "_PATH)\%.o: $(SRC_", \
+			ft_strtoupper(project->folders[i]), "_PATH)\%.c $(MAKEFILE) $(HEADER)\n	$(CC) $(CFLAGS) -o $@ -c $<\n\n", NULL);
 		write_str(fd, "\n");
 	}
 	else
@@ -319,11 +258,9 @@ void	generate_objects(int fd, t_file *project)
 		else
 			write_str(fd, "OBJS	=	$(addprefix $(OBJS_DIRS),	\\\n\
 								$(SRCS:.c=.o))\n\n");
-
 		write_str(fd, "$(OBJS_DIRS)\%.o: $(SRCS_PATH)\%.c $(MAKEFILE) $(HEADER)\n");
 		write_str(fd, "	$(CC) $(CFLAGS) -o $@ -c $<\n\n\n");
 	}
-
 }
 
 void	generate_rules(int fd, t_file *project)
@@ -331,9 +268,7 @@ void	generate_rules(int fd, t_file *project)
 	write_str(fd, "all:		");
 	if (project->is_libft)
 		write_str(fd, "make_libft ");
-
 	write_str(fd, "$(OBJS_DIRS) $(NAME)\n\n");
-
 	if (project->is_libft)
 	{
 		write_str(fd, "make_libft:\n			$(MAKE) -C $(LIBFT_DIR)\n\n");
@@ -435,14 +370,18 @@ int	main(int argc, char **argv, char **envp)
 
 	(void)argc;
 	(void)argv;
+	(void)envp;
+	(void)project;
 
-	project.folders[0][0] = '\0';
-	project.c_file[0][0][0] = '\0';
-	if (!get_user_input(&project))
+	// printf("path program %s\n", argv[0]);
+
+	// if (parsing_database(&project, argv, envp) != 0)
+	// 	return (-1);		// free all
+	if (!get_user_input(&project, argv, envp))
 		return (-1);		// free all
-	project.pwd_path = ft_strjoin(ft_strjoin(getenv("PWD"), "/"), project.name);
-	generate_folder(&project, envp);
-	generate_makefile(&project);
-	generate_file(&project);
+	// project.pwd_path = ft_strjoin(ft_strjoin(getenv("PWD"), "/"), project.name);
+	// generate_folder(&project, envp);
+	// generate_makefile(&project);
+	// generate_file(&project);
 	return (0);
 }

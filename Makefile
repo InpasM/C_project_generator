@@ -1,6 +1,12 @@
 # **************************************************************************** #
 #                                                                              #
 #                                                         :::      ::::::::    #
+#    Makefile                                           :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: mehdisapin <mehdisapin@student.42.fr>      +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2023/06/04 22:43:06 by mehdisapin        #+#    #+#              #
+#    Updated: 2023/06/04 22:43:15 by mehdisapin       ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -39,11 +45,13 @@ SRCS_PATH	=	sources/
 
 SRC_GENERATE_PATH		=	$(SRCS_PATH)generate/
 SRC_INPUT_PATH			=	$(SRCS_PATH)input/
+SRC_DATABASE_PATH			=	$(SRCS_PATH)database/
 
 OBJ_GENERATE_PATH		=	$(SRC_GENERATE_PATH).objs/
 OBJ_INPUT_PATH			=	$(SRC_INPUT_PATH).objs/
+OBJ_DATABASE_PATH			=	$(SRC_DATABASE_PATH).objs/
 
-OBJS_DIRS	=	$(OBJ_GENERATE_PATH)	$(OBJ_INPUT_PATH) 
+OBJS_DIRS	=	$(OBJ_GENERATE_PATH)	$(OBJ_INPUT_PATH)	$(OBJ_DATABASE_PATH) 
 
 
 # ##################################### #
@@ -54,10 +62,13 @@ SRC_GENERATE_FILES		=	makefile.c	header.c	project_structure.c
 
 SRC_INPUT_FILES			=	get_input.c
 
+SRC_DATABASE_FILES		=	parsing_database.c
+
 SRCS_GENERATE		=	$(addprefix $(SRC_GENERATE_PATH), $(SRC_GENERATE_FILES))
 SRCS_INPUT			=	$(addprefix $(SRC_INPUT_PATH), $(SRC_INPUT_FILES))
+SRCS_DATABASE		=	$(addprefix $(SRC_DATABASE_PATH), $(SRC_DATABASE_FILES))
 
-SRCS	=	$(SRCS_GENERATE)	$(SRCS_INPUT) 
+SRCS	=	$(SRCS_GENERATE)	$(SRCS_INPUT)	$(SRCS_DATABASE)
 
 
 # ##################################### #
@@ -67,15 +78,21 @@ SRCS	=	$(SRCS_GENERATE)	$(SRCS_INPUT)
 OBJS_GENERATE		=	$(addprefix $(OBJ_GENERATE_PATH),		\
 						$(SRC_GENERATE_FILES:.c=.o))
 
-OBJS_INPUT		=	$(addprefix $(OBJ_INPUT_PATH),		\
+OBJS_INPUT			=	$(addprefix $(OBJ_INPUT_PATH),		\
 						$(SRC_INPUT_FILES:.c=.o))
 
-OBJS	=	$(OBJS_GENERATE)	$(OBJS_INPUT)	
+OBJS_DATABASE		=	$(addprefix $(OBJ_DATABASE_PATH),		\
+						$(SRC_DATABASE_FILES:.c=.o))
+
+OBJS	=	$(OBJS_GENERATE)	$(OBJS_INPUT)	$(OBJS_DATABASE)
 
 $(OBJ_GENERATE_PATH)%.o: $(SRC_GENERATE_PATH)%.c $(MAKEFILE) $(HEADER)
 	$(CC) $(CFLAGS) -o $@ -c $<
 
 $(OBJ_INPUT_PATH)%.o: $(SRC_INPUT_PATH)%.c $(MAKEFILE) $(HEADER)
+	$(CC) $(CFLAGS) -o $@ -c $<
+
+$(OBJ_DATABASE_PATH)%.o: $(SRC_DATABASE_PATH)%.c $(MAKEFILE) $(HEADER)
 	$(CC) $(CFLAGS) -o $@ -c $<
 
 
@@ -120,3 +137,5 @@ re:
 			$(MAKE) all
 
 .PHONY:		all clean fclean re make_libft
+
+.SILENT:

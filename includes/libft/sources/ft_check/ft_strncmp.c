@@ -6,14 +6,14 @@
 /*   By: mehdisapin <mehdisapin@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/09 13:12:35 by msapin            #+#    #+#             */
-/*   Updated: 2022/12/10 12:47:07 by mehdisapin       ###   ########.fr       */
+/*   Updated: 2023/03/20 15:38:47 by mehdisapin       ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/libft.h"
 
 /**
- * @brief The ft_strcmp() function compares the two strings s1 and s2.
+ * @brief The ft_strncmp() function compares the two strings s1 and s2.
  * 
  * @param char* s1 
  * @param char* s2 

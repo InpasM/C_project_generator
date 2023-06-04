@@ -6,7 +6,7 @@
 /*   By: mehdisapin <mehdisapin@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/08 14:17:43 by msapin            #+#    #+#             */
-/*   Updated: 2023/02/08 16:25:53 by mehdisapin       ###   ########.fr       */
+/*   Updated: 2023/03/22 21:15:56 by mehdisapin       ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,7 @@ int		ft_isascii(int c);
 int		ft_isdigit(int c);
 int		ft_isprint(int c);
 int		ft_memcmp(const void *s1, const void *s2, size_t n);
+int		ft_strmatch(const char *s1, const char *s2);
 int		ft_strncmp(const char *s1, const char *s2, size_t n);
 char	*ft_strchr(const char *s, int c);
 char	*ft_strrchr(const char *s, int c);
@@ -68,6 +69,7 @@ char	*ft_itoa(int n);
 int		ft_tolower(int c);
 int		ft_toupper(int c);
 
+void	ft_putarr_fd(char **arr, int fd);
 void	ft_putchar_fd(char c, int fd);
 void	ft_putendl_fd(char *s, int fd);
 void	ft_putnbr_fd(int n, int fd);
@@ -105,6 +107,7 @@ int		conv_base_len(size_t n, int len_base);
 
 char	**ft_split(char const *s, char c);
 char	*ft_strdup(const char *s1);
+char	*ft_strdup_null(const char *s1);
 void	ft_striteri(char *s, void (*f)(unsigned int, char*));
 char	*ft_strjoin(char const *s1, char const *s2);
 size_t	ft_strlcat(char *dst, const char *src, size_t dstsize);

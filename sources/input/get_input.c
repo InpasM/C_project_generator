@@ -6,7 +6,7 @@
 /*   By: mehdisapin <mehdisapin@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/12 09:33:40 by mehdisapin        #+#    #+#             */
-/*   Updated: 2023/06/04 19:39:26 by mehdisapin       ###   ########.fr       */
+/*   Updated: 2023/06/05 21:12:58 by mehdisapin       ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,8 +100,8 @@ files.c\n  :\n  |-- Makefile\n\n-> ");
 
 void	init_project(t_file *project)
 {
-	project->db->add_db = 0;
-	project->db->nb_lib = 0;
+	// project->db->add_db = 0;
+	// project->db->nb_lib = 0;
 	project->is_folder = 0;
 	project->folders[0][0] = '\0';
 	project->nb_folder = 0;
@@ -233,36 +233,93 @@ void	ask_file_name(t_file *project)
 	}
 }
 
+int	add_to_database(t_file *project)
+{
+	char	tmp_name[100];
+	char	tmp_value[256];
+	char	tmp_flags[100];
+	(void)tmp_flags;
+	(void)tmp_value;
+	(void)project;
+
+	system("clear");
+	ft_printf("       %s -- Adding a new Library -- %s\n\n", WHTB, \
+	NOCOLOR);
+	tmp_name[0] = '\0';
+	while (!tmp_name[0])
+	{
+		ft_printf("%sName:%s ", WHTB, \
+		NOCOLOR);
+		if (scanf("%99s", tmp_name) < 0)
+			break ;
+		ft_printf("\n\n");
+	}
+	// system("clear");
+	tmp_value[0] = '\0';
+	while (!tmp_value[0])
+	{
+		ft_printf("%sGit Repository or Folder Path:%s ", WHTB, \
+		NOCOLOR);
+		if (scanf("%255s", tmp_value) < 0)
+			break ;
+		ft_printf("\n\n");
+	}
+	write_str(project->db->fd_db, "\n\n");
+	write_str(project->db->fd_db, "name=");
+	if (tmp_name[0])
+		write_str(project->db->fd_db, tmp_name);
+
+	int	tmp_len = ft_strlen_null(tmp_value);
+	// printf("last char %s\n", tmp_value + (tmp_len - 4));
+	write_str(project->db->fd_db, ",");
+	if (tmp_len > 4 && ft_strmatch(tmp_value + (tmp_len - 4), ".git"))
+		write_str(project->db->fd_db, "git=");
+	// printf("%d\n", access(tmp_value, F_OK));
+	else if (access(tmp_value, F_OK))
+		write_str(project->db->fd_db, "path=");
+	if (tmp_value[0])
+		write_str(project->db->fd_db, tmp_value);
+	return (0);
+}
+
+void	add_lib(t_file *project)
+{
+	add_element(&project->db->add_db, "       %s -- Add libraries ? (yes/no) -- \
+%s\n\n-> ");
+}
+
 int	ask_for_libraries(t_file *project, char **argv, char **envp)
 {
 	int	tmp_add = 0;
 	(void)tmp_add;
 	(void)project;
-	if (parsing_database(project, argv, envp) != 0)
-		return (-1);		// free all
+	// if (parsing_database(project, argv, envp) != 0)
+		// return (-1);		// free all
+	parsing_database(project, argv, envp);
 	/*add_element(&project->db->add_db, "       %s -- Add libraries ? (yes/no) -- \
 %s\n\n-> ");
 	if (project->db->add_db)
-	{
+	{*/
 		if (!project->db->nb_lib)
 		{
-			// printf("no libraries register, add one? (yes/no)\n");
 			add_element(&tmp_add, "       %s -- No libraries register! -- %s\n\
       Configure new library ? (yes/no)\n\n-> ");
 	  		if (tmp_add)
-				printf("add new library into database\n");
+				if (add_to_database(project) == 0)
+					if (parsing_database(project, argv, envp) != 0)
+						return (-1);
 		}
 		else
 		{
-			printf("there is %d libraries\n", project->db->nb_lib);
+			add_lib(project);
 		}
-	}*/
+	// }
 	return (0);
 }
 
 int	get_user_input(t_file *project, char **argv, char **envp)
 {
-	// init_project(project);
+	init_project(project);
 	// ask_project_name(project);
 	ask_for_libraries(project, argv, envp);
 

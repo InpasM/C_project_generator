@@ -1,1 +1,8 @@
-name=LIBFT,git=https://github.com/InpasM/libft.git,flags=test
+test
+name=test,git=test.git,dtest
+
+name=fefef,../sources
+
+name=dede,/sources/
+
+name=libft,git=https://github.com/InpasM/libft.git

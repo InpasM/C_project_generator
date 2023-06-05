@@ -6,7 +6,7 @@
 /*   By: mehdisapin <mehdisapin@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/13 19:24:49 by mehdisapin        #+#    #+#             */
-/*   Updated: 2023/06/04 22:42:46 by mehdisapin       ###   ########.fr       */
+/*   Updated: 2023/06/05 18:21:32 by mehdisapin       ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,6 +57,7 @@ typedef struct s_lib
 {
 	char	*name;
 	char	*value;
+	int		to_add;
 }			t_lib;
 
 typedef struct s_db
@@ -67,6 +68,7 @@ typedef struct s_db
 	char	*file;
 	// char	***lib;
 	t_lib	***lib;
+	// t_lib	***new_lib;
 }			t_db;
 
 typedef struct s_file

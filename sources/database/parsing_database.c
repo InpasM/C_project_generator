@@ -6,7 +6,7 @@
 /*   By: mehdisapin <mehdisapin@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/02 18:10:12 by mehdisapin        #+#    #+#             */
-/*   Updated: 2023/06/04 22:36:29 by mehdisapin       ###   ########.fr       */
+/*   Updated: 2023/06/05 20:56:50 by mehdisapin       ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,18 +39,54 @@ char	*rm_last_file(char *path)
 	return (new_path);
 }
 
+
+int	is_lib_valid(char **tmp_lib)
+{
+	char	**tmp_category;
+	int		j = -1;
+
+	while (tmp_lib[++j])
+	{
+		tmp_category = ft_split(tmp_lib[j], '=');
+		if (!(ft_strmatch(tmp_category[0], "name") || ft_strmatch(tmp_category[0], "git") \
+			|| ft_strmatch(tmp_category[0], "flags") || ft_strmatch(tmp_category[0], "path")) \
+			|| !tmp_category[1])
+				return (0);
+	}
+	return (1);
+}
+
+int	count_lib(char	**all_lib)
+{
+	char	**tmp_lib;
+	int		i = -1;
+	int		count = 0;
+
+	while (all_lib[++i])
+	{
+		tmp_lib = ft_split(all_lib[i], ',');
+		if (is_lib_valid(tmp_lib))
+			count++;
+	}
+	return (count);
+}
+
 int	reading_database(t_file *project)
 {
 	char	**tmp_split;
 	char	**tmp_lib;
 	char	**tmp_category;
+	(void)tmp_category;
+	(void)tmp_lib;
 
 	tmp_split = ft_split(project->db->file, '\n');
-	project->db->nb_lib = ft_arrlen(tmp_split);
+	project->db->nb_lib = count_lib(tmp_split);
+	// printf("count valid lib %d\n", project->db->nb_lib);
 	project->db->lib = ft_calloc(project->db->nb_lib + 1, sizeof(t_lib *));
 	if (!project->db->lib)
 		return (-1);
 	int	i = -1;
+	int	k = 0;
 	while (tmp_split[++i])
 	{
 		tmp_lib = ft_split(tmp_split[i], ',');
@@ -61,33 +97,24 @@ int	reading_database(t_file *project)
 		while (tmp_lib[++j])
 		{
 			tmp_category = ft_split(tmp_lib[j], '=');
-			project->db->lib[i][j] = ft_calloc(3, sizeof(t_lib));
-			project->db->lib[i][j]->name = ft_strdup_null(tmp_category[0]);
-			project->db->lib[i][j]->value = ft_strdup_null(tmp_category[1]);
+			// if (is_lib_valid(tmp_category[0], tmp_category[1]))
+			if ((ft_strmatch(tmp_category[0], "name") || ft_strmatch(tmp_category[0], "git") \
+			|| ft_strmatch(tmp_category[0], "flags") || ft_strmatch(tmp_category[0], "path")) \
+			&& tmp_category[1])
+			{
+				project->db->lib[i][k] = ft_calloc(3, sizeof(t_lib));
+				project->db->lib[i][k]->name = ft_strdup_null(tmp_category[0]);
+				project->db->lib[i][k]->value = ft_strdup_null(tmp_category[1]);
+				project->db->lib[i][k]->to_add = 0;
+				k++;
+			}
+			// else
+			// 	project->db->lib[i][j]->to_add = -1;
 		}
-		ft_arrfree(tmp_lib);
+		// ft_arrfree(tmp_lib);
 	}
 	ft_arrfree(tmp_split);
 	return (0);
-}
-
-int	is_database_valid(t_file *project)
-{
-	int	i = -1;
-
-	while (project->db->lib[++i])
-	{
-		int	j = -1;
-		while (project->db->lib[i][++j])
-		{
-			if (!(ft_strmatch(project->db->lib[i][j]->name, "name") || ft_strmatch(project->db->lib[i][j]->name, "git") \
-			|| ft_strmatch(project->db->lib[i][j]->name, "flags")))
-				return (printf("database: %s: not recognized\n", project->db->lib[i][j]->name), 0);
-			else if (!project->db->lib[i][j]->value[0])
-				return (printf("database: %s: missing value\n", project->db->lib[i][j]->name), 0);
-		}
-	}
-	return (1);
 }
 
 int	parsing_database(t_file *project, char **argv, char **envp)
@@ -100,6 +127,8 @@ int	parsing_database(t_file *project, char **argv, char **envp)
 	project->db = malloc(sizeof(t_db));
 	if (!project->db)
 		return (-1);
+	project->db->add_db = 0;
+	project->db->nb_lib = 0;
 	path_data = ft_strjoin(rm_last_file(argv[0]), "database/");
 	path_datafile = ft_strjoin(path_data, "database");
 	if (access(path_data, F_OK) != 0)
@@ -117,12 +146,9 @@ int	parsing_database(t_file *project, char **argv, char **envp)
 	project->db->fd_db = open(path_datafile, O_RDWR | O_APPEND, 0644);
 	if (project->db->fd_db == -1)
 		return (ft_putstr_fd("database file unwritable\n", 2), -1);
-
 	project->db->file = get_file(project->db->fd_db);
-
 	reading_database(project);
-	if (!is_database_valid(project))
-		return (-1);
-
+	// if (!is_database_valid(project))
+	// 	return (-1);
 	return (0);
 }

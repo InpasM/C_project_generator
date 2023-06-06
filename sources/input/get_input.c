@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_input.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mehdisapin <mehdisapin@student.42.fr>      +#+  +:+       +#+        */
+/*   By: msapin <msapin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/12 09:33:40 by mehdisapin        #+#    #+#             */
-/*   Updated: 2023/06/05 21:12:58 by mehdisapin       ###   ########.fr       */
+/*   Updated: 2023/06/06 11:14:28 by msapin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -293,27 +293,20 @@ int	ask_for_libraries(t_file *project, char **argv, char **envp)
 	int	tmp_add = 0;
 	(void)tmp_add;
 	(void)project;
-	// if (parsing_database(project, argv, envp) != 0)
-		// return (-1);		// free all
 	parsing_database(project, argv, envp);
-	/*add_element(&project->db->add_db, "       %s -- Add libraries ? (yes/no) -- \
-%s\n\n-> ");
-	if (project->db->add_db)
-	{*/
-		if (!project->db->nb_lib)
-		{
-			add_element(&tmp_add, "       %s -- No libraries register! -- %s\n\
-      Configure new library ? (yes/no)\n\n-> ");
-	  		if (tmp_add)
-				if (add_to_database(project) == 0)
-					if (parsing_database(project, argv, envp) != 0)
-						return (-1);
-		}
-		else
-		{
-			add_lib(project);
-		}
-	// }
+	if (!project->db->nb_lib)
+	{
+		add_element(&tmp_add, "       %s -- No libraries register! -- %s\n\
+	Configure new library ? (yes/no)\n\n-> ");
+		if (tmp_add)
+			if (add_to_database(project) == 0)
+				if (parsing_database(project, argv, envp) != 0)
+					return (-1);
+	}
+	else
+	{
+		add_lib(project);
+	}
 	return (0);
 }
 

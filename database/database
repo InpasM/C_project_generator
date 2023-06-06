@@ -5,4 +5,6 @@ name=fefef,../sources
 
 name=dede,/sources/
 
-name=libft,git=https://github.com/InpasM/libft.git
+name=libft,g
+
+name=libft,path=C_project_generator

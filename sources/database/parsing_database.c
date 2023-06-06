@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parsing_database.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mehdisapin <mehdisapin@student.42.fr>      +#+  +:+       +#+        */
+/*   By: msapin <msapin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/02 18:10:12 by mehdisapin        #+#    #+#             */
-/*   Updated: 2023/06/05 20:56:50 by mehdisapin       ###   ########.fr       */
+/*   Updated: 2023/06/06 11:11:47 by msapin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,7 +97,6 @@ int	reading_database(t_file *project)
 		while (tmp_lib[++j])
 		{
 			tmp_category = ft_split(tmp_lib[j], '=');
-			// if (is_lib_valid(tmp_category[0], tmp_category[1]))
 			if ((ft_strmatch(tmp_category[0], "name") || ft_strmatch(tmp_category[0], "git") \
 			|| ft_strmatch(tmp_category[0], "flags") || ft_strmatch(tmp_category[0], "path")) \
 			&& tmp_category[1])
@@ -108,8 +107,6 @@ int	reading_database(t_file *project)
 				project->db->lib[i][k]->to_add = 0;
 				k++;
 			}
-			// else
-			// 	project->db->lib[i][j]->to_add = -1;
 		}
 		// ft_arrfree(tmp_lib);
 	}

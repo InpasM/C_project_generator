@@ -6,7 +6,7 @@
 /*   By: msapin <msapin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/15 13:44:36 by msapin            #+#    #+#             */
-/*   Updated: 2023/03/02 13:50:13 by msapin           ###   ########.fr       */
+/*   Updated: 2023/06/06 11:03:43 by msapin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,9 +24,9 @@ char    *line_file(char *file_name, int version)
 	return_line = ft_calloc(82, sizeof(char));
 	strlen = ft_strlen(file_name);
 	lenrem = 51 - strlen;
+	i = 0;
 	if (version == 0)
 	{
-		i = 0;
 		endline = ft_strdup(":+:      :+:    :+:    #\n");
 		return_line[i] = '#';
 	}

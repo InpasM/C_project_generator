@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   project_gen.h                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mehdisapin <mehdisapin@student.42.fr>      +#+  +:+       +#+        */
+/*   By: msapin <msapin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/13 19:24:49 by mehdisapin        #+#    #+#             */
-/*   Updated: 2023/06/05 18:21:32 by mehdisapin       ###   ########.fr       */
+/*   Updated: 2023/06/22 17:42:49 by msapin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,6 +78,8 @@ typedef struct s_file
 	char	header[900];
 	int		type_project;
 	int		is_libft;
+	int		add_header;
+	int		add_cpp_files;
 	int		is_folder;
 	int		use_struct;
 	int		nb_folder;

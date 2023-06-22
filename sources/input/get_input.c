@@ -6,7 +6,7 @@
 /*   By: msapin <msapin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/12 09:33:40 by mehdisapin        #+#    #+#             */
-/*   Updated: 2023/06/06 11:14:28 by msapin           ###   ########.fr       */
+/*   Updated: 2023/06/22 17:47:59 by msapin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ void	add_element(int *is_elem, char *question)
 	while (*is_elem < 0)
 	{
 		system("clear");
-		ft_printf(question, WHTB, NOCOLOR);
+		ft_printf(question, BWHT, NOCOLOR);
 		scanf("%3s", tmp_bool);
 		if (strcmp(tmp_bool, "yes") == 0 || strcmp(tmp_bool, "1") == 0)
 		{
@@ -42,16 +42,16 @@ void	add_element(int *is_elem, char *question)
 static void	ask_project_name(t_file	*project)
 {
 	system("clear");
-	ft_printf("%s# ###################################### #\n", BLK);
-	ft_printf("#%s           %sProject Generator%s            #\n", NOCOLOR, \
-	BWHT, BLK);
-	ft_printf("#%s           %sby    SAPIN Mehdi%s            #\n", NOCOLOR, \
-	BWHT, BLK);
-	ft_printf("# ###################################### #%s\n\n\n", NOCOLOR);
+	// ft_printf("%s# ###################################### #\n", BLK);
+	// ft_printf("#%s           %sProject Generator%s            #\n", NOCOLOR, \
+	// BWHT, BLK);
+	// ft_printf("#%s           %sby    SAPIN Mehdi%s            #\n", NOCOLOR, \
+	// BWHT, BLK);
+	// ft_printf("# ###################################### #%s\n\n\n", NOCOLOR);
 	project->name[0] = '\0';
 	while (!project->name[0])
 	{
-		ft_printf("       %s -- Name of  the Project -- %s\n\n-> ", WHTB, \
+		ft_printf("       %s -- Name of  the Project -- %s\n\n-> ", BWHT, \
 		NOCOLOR);
 		scanf("%99s", project->name);
 		ft_printf("\n\n");
@@ -310,20 +310,50 @@ int	ask_for_libraries(t_file *project, char **argv, char **envp)
 	return (0);
 }
 
-int	get_user_input(t_file *project, char **argv, char **envp)
+int	ask_project_language(t_file *project)
 {
-	init_project(project);
-	// ask_project_name(project);
+	char	tmp_bool[4];
+
+	system("clear");
+	ft_printf("%s# ###################################### #\n", BLK);
+	ft_printf("#%s           %sProject Generator%s            #\n", NOCOLOR, \
+	BWHT, BLK);
+	ft_printf("#%s           %sby    SAPIN Mehdi%s            #\n", NOCOLOR, \
+	BWHT, BLK);
+	ft_printf("# ###################################### #%s\n\n", NOCOLOR);
+	
+	project->type_project = 0;
+	while (project->type_project == 0)
+	{
+		ft_printf("     %s -- Language of the project -- %s\n\n1/ C\n2/ C++\n\n-> ", BWHT, \
+		NOCOLOR);
+		scanf("%2s", tmp_bool);
+		if (strcmp(tmp_bool, "1") == 0 || strcmp(tmp_bool, "C") == 0)
+		{
+			project->type_project = 1;
+			break ;
+		}
+		else if (strcmp(tmp_bool, "2") == 0 || strcmp(tmp_bool, "C++") == 0)
+		{
+			project->type_project = 2;
+			break ;
+		}
+		else if (!tmp_bool[0])
+			exit (1);
+		ft_printf("\n\n");
+	}
+	ft_printf("\n\n");
+	return (0);
+}
+
+void	get_c_info(t_file *project, char **argv, char **envp)
+{
 	ask_for_libraries(project, argv, envp);
 
-	(void)ask_struct;
-	(void)add_element;
-	(void)ask_project_name;
-
-	/*add_element(&project->is_libft, "       %s -- Add LIBFT ? (yes/no) -- \
+	add_element(&project->is_libft, "       %s -- Add LIBFT ? (yes/no) -- \
 %s\n\n-> ");
+
 	add_element(&project->use_struct, ask_struct(project));
-	// add function for that
 	if (project->use_struct)
 		add_element(&project->is_folder, " %s -- Add folder into sources ? \
 (yes/no) -- %s\n\n-> ");
@@ -331,6 +361,39 @@ int	get_user_input(t_file *project, char **argv, char **envp)
 		add_element(&project->is_folder, ft_strjoin(ft_strjoin(" %s -- Add \
 folder into ", project->name), " ? (yes/no) -- %s\n\n-> "));
 	ask_folder_name(project);
-	ask_file_name(project);*/
+	ask_file_name(project);
+}
+
+void	get_cpp_info(t_file *project)
+{
+	add_element(&project->add_header, "       %s -- Add .h / .hpp files ? (yes/no) -- \
+%s\n\n-> ");
+	if (project->add_header)
+	{
+		printf("ask name of header\n");
+	}
+	add_element(&project->add_cpp_files, "       %s -- Add .cpp files ? (yes/no) -- \
+%s\n\n-> ");
+	if (project->add_cpp_files)
+	{
+		printf("ask name of cpp files\n");
+	}
+}
+
+int	get_user_input(t_file *project, char **argv, char **envp)
+{
+	(void)ask_struct;
+	(void)add_element;
+	(void)ask_project_name;
+	(void)envp;
+	(void)argv;
+
+	init_project(project);
+	ask_project_language(project);
+	ask_project_name(project);
+	if (project->type_project == 1)
+		get_c_info(project, argv, envp);
+	else if (project->type_project == 2)
+		get_cpp_info(project);
 	return (1);
 }

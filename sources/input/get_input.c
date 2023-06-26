@@ -6,7 +6,7 @@
 /*   By: msapin <msapin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/12 09:33:40 by mehdisapin        #+#    #+#             */
-/*   Updated: 2023/06/22 17:47:59 by msapin           ###   ########.fr       */
+/*   Updated: 2023/06/26 16:27:21 by msapin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -366,8 +366,10 @@ folder into ", project->name), " ? (yes/no) -- %s\n\n-> "));
 
 void	get_cpp_info(t_file *project)
 {
-	add_element(&project->add_header, "       %s -- Add .h / .hpp files ? (yes/no) -- \
-%s\n\n-> ");
+	// char	*h_file_question = 
+	// add_element(&project->add_header, h_file_question);
+// 	add_element(&project->add_header, "       %s -- Add .h / .hpp files ? (yes/no) -- \
+// %s\n\n-> ");
 	if (project->add_header)
 	{
 		printf("ask name of header\n");

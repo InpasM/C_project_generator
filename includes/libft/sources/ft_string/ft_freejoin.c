@@ -1,26 +1,26 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strjoin.c                                       :+:      :+:    :+:   */
+/*   ft_freejoin.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mehdisapin <mehdisapin@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/11/11 13:56:24 by msapin            #+#    #+#             */
-/*   Updated: 2023/06/27 13:16:38 by mehdisapin       ###   ########.fr       */
+/*   Created: 2023/06/27 13:14:13 by mehdisapin        #+#    #+#             */
+/*   Updated: 2023/06/27 13:15:05 by mehdisapin       ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/libft.h"
 
 /**
- * @brief The ft_strjoin() function allocate and return a new string, result
- * of s1 and s2 concatenation.
+ * @brief The ft_freejoin() function allocate and return a new string, result
+ * of s1 and s2 concatenation. Free s1.
  * 
- * @param char* s1 
- * @param char* s2 
- * @return The new string or NULL if unsuccessful allocation. 
+ * @param s1 
+ * @param s2 
+ * @return char* 
  */
-char	*ft_strjoin(char const *s1, char const *s2)
+char	*ft_freejoin(char *s1, const char *s2)
 {
 	char	*tmp_join;
 	size_t	i;
@@ -39,5 +39,5 @@ char	*ft_strjoin(char const *s1, char const *s2)
 	while (s2[j])
 		tmp_join[i++] = s2[j++];
 	tmp_join[i] = '\0';
-	return (tmp_join);
+	return (free(s1), tmp_join);
 }

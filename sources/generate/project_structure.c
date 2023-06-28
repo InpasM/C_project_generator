@@ -6,7 +6,7 @@
 /*   By: mehdisapin <mehdisapin@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/12 09:33:34 by mehdisapin        #+#    #+#             */
-/*   Updated: 2023/06/02 14:35:32 by mehdisapin       ###   ########.fr       */
+/*   Updated: 2023/06/28 22:44:22 by mehdisapin       ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,13 +19,32 @@ static void	create_project_h(t_file *project)
 	int		tmp_filefd;
 
 	if (project->use_struct)
-		tmp_path = ft_strjoin(ft_strjoin(ft_strjoin(project->pwd_path, "/includes/"), project->name), ".h");
+	{
+		// tmp_path = ft_strjoin(ft_strjoin(project->pwd_path, "/includes/"), project->name);
+		tmp_path = ft_multijoin(project->pwd_path, "/includes/", project->name, NULL);
+	}
 	else
-		tmp_path = ft_strjoin(ft_strjoin(ft_strjoin(project->pwd_path, "/"), project->name), ".h");
+	{
+		// tmp_path = ft_strjoin(ft_strjoin(ft_strjoin(project->pwd_path, "/"), project->name), ".h");
+		tmp_path = ft_multijoin(project->pwd_path, "/", project->name, NULL);
+	}
+	if (project->type_project == C)
+		tmp_path = ft_freejoin(tmp_path, ".h");
+	else if (project->type_project == CPP)
+		tmp_path = ft_freejoin(tmp_path, ".hpp");
 	tmp_filefd = open(tmp_path, O_RDWR | O_CREAT | O_TRUNC, 0644);
 
 	// write text into the file.h
-	generate_header(tmp_filefd, ft_strjoin(project->name, ".h"), 1);
+	if (project->type_project == C)
+	{
+		generate_header(tmp_filefd, ft_strjoin(project->name, ".h"), 1);
+
+	}
+	else if (project->type_project == CPP)
+	{
+		generate_header(tmp_filefd, ft_strjoin(project->name, ".hpp"), 1);
+
+	}
 	h_name = ft_strjoin(ft_strtoupper(project->name), "_H");
 	write_str(tmp_filefd, "#ifndef ");
 	write_str(tmp_filefd, h_name);
@@ -54,13 +73,15 @@ void	create_file_c(t_file *project, int i)
 	while (project->c_file[i][++j][0])
 	{
 		if (project->use_struct && project->is_folder)
-			tmp_path = ft_strjoin(ft_strjoin(ft_strjoin(ft_strjoin(project->pwd_path, "/sources/"), project->folders[i]), "/"), project->c_file[i][j]);
+			// tmp_path = ft_strjoin(ft_strjoin(ft_strjoin(ft_strjoin(project->pwd_path, "/sources/"), project->folders[i]), "/"), project->c_file[i][j]);
+			tmp_path = ft_multijoin(project->pwd_path, "/sources/", project->folders[i], "/", project->c_file[i][j], NULL);
 		else if (project->use_struct && !project->is_folder)
-			tmp_path = ft_strjoin(ft_strjoin(project->pwd_path, "/sources/"), project->c_file[i][j]);
+			// tmp_path = ft_strjoin(ft_strjoin(project->pwd_path, "/sources/"), project->c_file[i][j]);
+			tmp_path = ft_multijoin(project->pwd_path, "/sources/", project->c_file[i][j], NULL);
 		else if (!project->use_struct && project->is_folder)
-			tmp_path = ft_strjoin(ft_strjoin(ft_strjoin(ft_strjoin(project->pwd_path, "/"), project->folders[i]), "/"), project->c_file[i][j]);
+			tmp_path = ft_multijoin(project->pwd_path, "/", project->folders[i], "/", project->c_file[i][j], NULL);
 		else if (!project->use_struct && !project->is_folder)
-			tmp_path = ft_strjoin(ft_strjoin(project->pwd_path, "/"), project->c_file[i][j]);
+			tmp_path = ft_multijoin(project->pwd_path, "/", project->c_file[i][j], NULL);
 		tmp_filefd = open(tmp_path, O_RDWR | O_CREAT, 0644);
 
 		// write text into the file.h
@@ -74,7 +95,11 @@ void	create_file_c(t_file *project, int i)
 		else if (!project->use_struct && !project->is_folder)
 			write_str(tmp_filefd, "#include \"");
 		write_str(tmp_filefd, project->name);
-		write_str(tmp_filefd, ".h\"\n");
+			
+		if (project->type_project == C)
+			write_str(tmp_filefd, ".h\"\n");
+		else if (project->type_project == CPP)
+			write_str(tmp_filefd, ".hpp\"\n");
 		if (i == 0 && j == 0)
 			write_str(tmp_filefd, "\nint	main()\n{\n	return (0);\n}\n");
 		close (tmp_filefd);

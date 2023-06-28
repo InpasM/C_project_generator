@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   makefile.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: msapin <msapin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: mehdisapin <mehdisapin@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/12 22:18:27 by mehdisapin        #+#    #+#             */
-/*   Updated: 2023/06/22 17:30:13 by msapin           ###   ########.fr       */
+/*   Updated: 2023/06/28 22:22:01 by mehdisapin       ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -379,17 +379,19 @@ int	main(int argc, char **argv, char **envp)
 	// 	return (-1);		// free all
 	if (!get_user_input(&project, argv, envp))
 		return (-1);		// free all
-	// project.pwd_path = ft_strjoin(ft_strjoin(getenv("PWD"), "/"), project.name);
+	project.pwd_path = ft_strjoin(ft_strjoin(getenv("PWD"), "/"), project.name);
 
 	if (project.type_project == 1)
 	{
-		// generate_folder(&project, envp);
-		// generate_makefile(&project);
-		// generate_file(&project);
+		generate_folder(&project, envp);
+		generate_makefile(&project);
+		generate_file(&project);
 	}
 	else if (project.type_project == 2)
 	{
-
+		generate_folder(&project, envp);
+		generate_makefile(&project);
+		generate_file(&project);
 	}
 	return (0);
 }

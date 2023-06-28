@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_input.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: msapin <msapin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: mehdisapin <mehdisapin@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/12 09:33:40 by mehdisapin        #+#    #+#             */
-/*   Updated: 2023/06/26 16:27:21 by msapin           ###   ########.fr       */
+/*   Updated: 2023/06/28 22:14:26 by mehdisapin       ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,12 +42,12 @@ void	add_element(int *is_elem, char *question)
 static void	ask_project_name(t_file	*project)
 {
 	system("clear");
-	// ft_printf("%s# ###################################### #\n", BLK);
+	/*// ft_printf("%s# ###################################### #\n", BLK);
 	// ft_printf("#%s           %sProject Generator%s            #\n", NOCOLOR, \
 	// BWHT, BLK);
 	// ft_printf("#%s           %sby    SAPIN Mehdi%s            #\n", NOCOLOR, \
 	// BWHT, BLK);
-	// ft_printf("# ###################################### #%s\n\n\n", NOCOLOR);
+	// ft_printf("# ###################################### #%s\n\n\n", NOCOLOR);*/
 	project->name[0] = '\0';
 	while (!project->name[0])
 	{
@@ -58,15 +58,25 @@ static void	ask_project_name(t_file	*project)
 	}
 }
 
-static int	contain_c(char *str)
+static int	contain_c(char *str, int type_project)
 {
 	int	len;
 
 	len = ft_strlen(str);
-	if (len < 3)
-		return (0);
-	if (str[len - 1] != 'c' && str[len - 1] != '.')
-		return (0);
+	if (type_project == C)
+	{
+		if (len < 3)
+			return (0);
+		if (str[len - 1] != 'c' && str[len - 1] != '.')
+			return (0);
+	}
+	else if (type_project == CPP)
+	{
+		if (len < 5)
+			return (0);
+		if (str[len - 1] != 'p' && str[len - 2] != 'p' && str[len - 3] != 'c' && str[len - 4] != '.')
+			return (0);
+	}
 	return (1);
 }
 
@@ -139,12 +149,22 @@ void	ask_folder_name(t_file *project)
 
 int	cpy_file(t_file *project, char *tmp_answer, int i, int j)
 {
-	if (contain_c(tmp_answer))
+	if (contain_c(tmp_answer, project->type_project))
 		strcpy(project->c_file[i][j], tmp_answer);
 	else if (only_c(tmp_answer) && !(tmp_answer[ft_strlen(tmp_answer) - 1] == '.'))
-		strcpy(project->c_file[i][j], ft_strjoin(tmp_answer, ".c"));
+	{
+		if (project->type_project == C)
+			strcpy(project->c_file[i][j], ft_strjoin(tmp_answer, ".c"));
+		else if (project->type_project == CPP)
+			strcpy(project->c_file[i][j], ft_strjoin(tmp_answer, ".cpp"));
+	}
 	else if (tmp_answer[ft_strlen(tmp_answer) - 1] == '.' && ft_strlen(tmp_answer) > 1)
-		strcpy(project->c_file[i][j], ft_strjoin(tmp_answer, "c"));
+	{
+		if (project->type_project == C)
+			strcpy(project->c_file[i][j], ft_strjoin(tmp_answer, "c"));
+		else if (project->type_project == CPP)
+			strcpy(project->c_file[i][j], ft_strjoin(tmp_answer, "cpp"));
+	}
 	else
 		j--;
 	j++;
@@ -175,20 +195,14 @@ void	ask_file_name(t_file *project)
 				ft_printf("\n\n-> ");
 				scanf("%19s", tmp_answer);
 				if (strcmp(tmp_answer, "end") != 0)
-				{
 					j = cpy_file(project, tmp_answer, i, j);
-					// if (contain_c(tmp_answer))
-					// 	strcpy(project->c_file[i][j], tmp_answer);
-					// else if (only_c(tmp_answer) && !(tmp_answer[ft_strlen(tmp_answer) - 1] == '.'))
-					// 	strcpy(project->c_file[i][j], ft_strjoin(tmp_answer, ".c"));
-					// else if (tmp_answer[ft_strlen(tmp_answer) - 1] == '.' && ft_strlen(tmp_answer) > 1)
-					// 	strcpy(project->c_file[i][j], ft_strjoin(tmp_answer, "c"));
-					// else
-					// 	j--;
-					// j++;
-				}
 				else if (i == 0 && j == 0)
-					strcpy(project->c_file[i][j], "main.c");
+				{
+					if (project->type_project == C)
+						strcpy(project->c_file[i][j], "main.c");
+					else if (project->type_project == CPP)
+						strcpy(project->c_file[i][j], "main.cpp");
+				}
 				ft_printf("\n\n");
 			}
 			system("clear");
@@ -205,29 +219,33 @@ void	ask_file_name(t_file *project)
 		while (strcmp(tmp_answer, "end") != 0)
 		{
 			if (project->use_struct)
-				ft_printf("%s -- Name of File.c %d ? (\"end\" to stop) -- %s\n\n%s/  ", WHTB, j + 1, NOCOLOR, "sources");
+			{
+				if (project->type_project == C)
+					ft_printf("%s -- Name of File.c %d ? (\"end\" to stop) -- %s\n\n%s/  ", WHTB, j + 1, NOCOLOR, "sources");
+				else if (project->type_project == CPP)
+					ft_printf("%s -- Name of File.cpp %d ? (\"end\" to stop) -- %s\n\n%s/  ", WHTB, j + 1, NOCOLOR, "sources");
+			}
 			else
-				ft_printf("%s -- Name of File.c %d ? (\"end\" to stop) -- %s\n\n%s/  ", WHTB, j + 1, NOCOLOR, project->name);
+			{
+				if (project->type_project == C)
+					ft_printf("%s -- Name of File.c %d ? (\"end\" to stop) -- %s\n\n%s/  ", WHTB, j + 1, NOCOLOR, project->name);
+				else if (project->type_project == CPP)
+					ft_printf("%s -- Name of File.cpp %d ? (\"end\" to stop) -- %s\n\n%s/  ", WHTB, j + 1, NOCOLOR, project->name);
+			}
 			k = 0;
 			while (project->c_file[i][k][0])
 				ft_printf("%s  ", project->c_file[i][k++]);
 			ft_printf("\n\n-> ");
 			scanf("%19s", tmp_answer);
 			if (strcmp(tmp_answer, "end") != 0)
-			{
 				j = cpy_file(project, tmp_answer, i, j);
-				// if (contain_c(tmp_answer))
-				// 	strcpy(project->c_file[i][j], tmp_answer);
-				// else if (only_c(tmp_answer) && !(tmp_answer[ft_strlen(tmp_answer) - 1] == '.'))
-				// 	strcpy(project->c_file[i][j], ft_strjoin(tmp_answer, ".c"));
-				// else if (tmp_answer[ft_strlen(tmp_answer) - 1] == '.' && ft_strlen(tmp_answer) > 1)
-				// 	strcpy(project->c_file[i][j], ft_strjoin(tmp_answer, "c"));
-				// else
-				// 	j--;
-				// j++;
-			}
 			else if (i == 0 && j == 0)
-				strcpy(project->c_file[i][j], "main.c");
+			{
+				if (project->type_project == C)
+					strcpy(project->c_file[i][j], "main.c");
+				else if (project->type_project == CPP)
+					strcpy(project->c_file[i][j], "main.cpp");
+			}
 			ft_printf("\n\n");
 		}
 	}
@@ -366,19 +384,25 @@ folder into ", project->name), " ? (yes/no) -- %s\n\n-> "));
 
 void	get_cpp_info(t_file *project)
 {
-	// char	*h_file_question = 
-	// add_element(&project->add_header, h_file_question);
-// 	add_element(&project->add_header, "       %s -- Add .h / .hpp files ? (yes/no) -- \
-// %s\n\n-> ");
+	(void)project;
+	char	*h_file_question = ft_multijoin("       %s -- Add ", project->name, ".hpp file ? (yes/no) -- %s\n\n-> ", NULL);
+
+	// printf("%s\n", h_file_question);
+	add_element(&project->add_header, h_file_question);
+
+	/*add_element(&project->add_header, "       %s -- Add .h / .hpp files ? (yes/no) -- \
+%s\n\n-> ");
 	if (project->add_header)
 	{
 		printf("ask name of header\n");
-	}
+	}*/
+
 	add_element(&project->add_cpp_files, "       %s -- Add .cpp files ? (yes/no) -- \
 %s\n\n-> ");
 	if (project->add_cpp_files)
 	{
-		printf("ask name of cpp files\n");
+		// printf("ask name of cpp files\n");
+		ask_file_name(project);
 	}
 }
 
@@ -393,6 +417,12 @@ int	get_user_input(t_file *project, char **argv, char **envp)
 	init_project(project);
 	ask_project_language(project);
 	ask_project_name(project);
+	// project->type_project = 2;
+	// project->name[0] = 't';
+	// project->name[1] = 'e';
+	// project->name[2] = 's';
+	// project->name[3] = 't';
+	// project->name[4] = 0;
 	if (project->type_project == 1)
 		get_c_info(project, argv, envp);
 	else if (project->type_project == 2)

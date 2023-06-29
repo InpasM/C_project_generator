@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   makefile.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mehdisapin <mehdisapin@student.42.fr>      +#+  +:+       +#+        */
+/*   By: msapin <msapin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/12 22:18:27 by mehdisapin        #+#    #+#             */
-/*   Updated: 2023/06/28 22:22:01 by mehdisapin       ###   ########.fr       */
+/*   Updated: 2023/06/29 15:17:43 by msapin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,7 +82,14 @@ uname)\n\nNOCOLOR		=	\\033[0m\nBGREEN		=	\\033[1;32m\n\n", \
 "HEADER		=	", NULL);
 	if (project->use_struct)
 		write_str(fd, "includes/");
-	write_all(fd, project->name, ".h\n\nMAKEFILE	=	Makefile\n\n", NULL);
+	write_all(fd, project->name, NULL);
+	
+	if (project->type_project == C)
+		write_all(fd, ".h\n\n", NULL);
+	else if (project->type_project == CPP)
+		write_all(fd, ".hpp\n\n", NULL);
+
+	write_all(fd, "MAKEFILE	=	Makefile\n\n", NULL);
 	if (project->is_libft)
 	{
 		if (project->use_struct)
@@ -92,6 +99,11 @@ $(LIBFT_DIR)libft.a\n\n");
 			write_str(fd, "LIBFT_DIR	=	libft/\nLIBFT_A		=	\
 $(LIBFT_DIR)libft.a\n\n");
 	}
+
+	//	add cpp compilation flags
+	if (project->type_project == CPP)
+		write_all(fd, "CPP			=	c++\n\n", NULL);
+
 	write_str(fd, "CFLAGS 		= 	-Wall -Wextra -Werror\n\n\
 RM 			= 	rm -rf\n\nAR 			= 	ar\n\n\
 ARFLAGS 	= 	-rcs\n\n\n");
@@ -231,9 +243,16 @@ void	generate_objects(int fd, t_file *project)
 		// write objects path
 		i = -1;
 		while (++i < project->nb_folder)
-			write_all(fd, "OBJS_", ft_strtoupper(project->folders[i]), "		=	$(addprefix $(OBJ_", \
-			ft_strtoupper(project->folders[i]), "_PATH),		\\\n						$(SRC_", \
-			ft_strtoupper(project->folders[i]), "_FILES:.c=.o))\n", NULL);
+		{
+			if (project->type_project == C)
+				write_all(fd, "OBJS_", ft_strtoupper(project->folders[i]), "		=	$(addprefix $(OBJ_", \
+				ft_strtoupper(project->folders[i]), "_PATH),		\\\n						$(SRC_", \
+				ft_strtoupper(project->folders[i]), "_FILES:.c=.o))\n", NULL);
+			else if (project->type_project == CPP)
+				write_all(fd, "OBJS_", ft_strtoupper(project->folders[i]), "		=	$(addprefix $(OBJ_", \
+				ft_strtoupper(project->folders[i]), "_PATH),		\\\n						$(SRC_", \
+				ft_strtoupper(project->folders[i]), "_FILES:.cpp=.o))\n", NULL);
+		}
 		write_str(fd, "\n");
 
 		// write obj files
@@ -246,20 +265,36 @@ void	generate_objects(int fd, t_file *project)
 		// write obj path
 		i = -1;
 		while (++i < project->nb_folder)
-			write_all(fd, "$(OBJ_", ft_strtoupper(project->folders[i]), "_PATH)\%.o: $(SRC_", \
-			ft_strtoupper(project->folders[i]), "_PATH)\%.c $(MAKEFILE) $(HEADER)\n	$(CC) $(CFLAGS) -o $@ -c $<\n\n", NULL);
+			if (project->type_project == C)
+				write_all(fd, "$(OBJ_", ft_strtoupper(project->folders[i]), "_PATH)\%.o: $(SRC_", \
+				ft_strtoupper(project->folders[i]), "_PATH)\%.c $(MAKEFILE) $(HEADER)\n	$(CC) $(CFLAGS) -o $@ -c $<\n\n", NULL);
+			else if (project->type_project == CPP)
+				write_all(fd, "$(OBJ_", ft_strtoupper(project->folders[i]), "_PATH)\%.o: $(SRC_", \
+				ft_strtoupper(project->folders[i]), "_PATH)\%.cpp $(MAKEFILE) $(HEADER)\n	$(CPP) $(CFLAGS) -o $@ -c $<\n\n", NULL);
+
 		write_str(fd, "\n");
 	}
 	else
 	{
 		if (project->use_struct)
 			write_str(fd, "OBJS	=	$(addprefix $(OBJS_DIRS),	\\\n\
-								$(SRC_FILES:.c=.o))\n\n");
+								$(SRC_FILES");
 		else
 			write_str(fd, "OBJS	=	$(addprefix $(OBJS_DIRS),	\\\n\
-								$(SRCS:.c=.o))\n\n");
-		write_str(fd, "$(OBJS_DIRS)\%.o: $(SRCS_PATH)\%.c $(MAKEFILE) $(HEADER)\n");
-		write_str(fd, "	$(CC) $(CFLAGS) -o $@ -c $<\n\n\n");
+								$(SRCS");
+
+		if (project->type_project == C)
+		{
+			write_str(fd, ":.c=.o))\n\n");
+			write_str(fd, "$(OBJS_DIRS)\%.o: $(SRCS_PATH)\%.c $(MAKEFILE) $(HEADER)\n");
+			write_str(fd, "	$(CC) $(CFLAGS) -o $@ -c $<\n\n\n");	
+		}
+		else if (project->type_project == CPP)
+		{
+			write_str(fd, ":.cpp=.o))\n\n");
+			write_str(fd, "$(OBJS_DIRS)\%.o: $(SRCS_PATH)\%.cpp $(MAKEFILE) $(HEADER)\n");
+			write_str(fd, "	$(CPP) $(CFLAGS) -o $@ -c $<\n\n\n");	
+		}
 	}
 }
 
@@ -287,16 +322,30 @@ void	generate_rules(int fd, t_file *project)
 	if (project->is_libft)
 	{
 		write_str(fd, "	$(AR) $(ARFLAGS) $(LIBFT_A) $(OBJS)\n");
-		write_str(fd, "	$(CC) $(CFLAGS) -o $(NAME) ");
+		if (project->type_project == C)
+			write_str(fd, "	$(CC) $(CFLAGS) -o $(NAME) ");
+		else if (project->type_project == CPP)
+			write_str(fd, "	$(CPP) $(CFLAGS) -o $(NAME) ");
 	}
 	else
-		write_str(fd, "	$(CC) $(CFLAGS) -o $(NAME) $(OBJS)");
+	{
+		if (project->type_project == C)
+			write_str(fd, "	$(CC) $(CFLAGS) -o $(NAME) $(OBJS)");
+		else if (project->type_project == CPP)
+			write_str(fd, "	$(CPP) $(CFLAGS) -o $(NAME) $(OBJS)");
+	}
+
 	if (project->is_libft)
 		write_str(fd, "$(LIBFT_A) ");
 	write_str(fd, "\n");
 	write_str(fd, "	@echo \"$(BGREEN)Linux Compilation Done$(NOCOLOR)\"\n");
 	write_str(fd, "else ifeq ($(UNAME),Darwin)\n");
-	write_str(fd, "	$(CC) $(CFLAGS) -o $(NAME) ");
+
+	if (project->type_project == C)
+		write_str(fd, "	$(CC) $(CFLAGS) -o $(NAME) ");
+	else if (project->type_project == CPP)
+		write_str(fd, "	$(CPP) $(CFLAGS) -o $(NAME) ");
+
 	if (project->is_libft)
 		write_str(fd, "$(LIBFT_A) ");
 	write_str(fd, "$(OBJS)\n");
